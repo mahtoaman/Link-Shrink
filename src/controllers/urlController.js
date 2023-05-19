@@ -25,7 +25,7 @@ const shortUrl = async (req, res) => {
       })
       .catch((err) => {console.log(err)});
 
-    if (flag == false) return res.status(400).send({ status: false, message: "Invalid URL");
+    if (flag == false) return res.status(400).send({ status: false, message: "Invalid URL"});
 
     let urlCode = shortid.generate();
     let shortUrl = `${req.protocol}://${req.headers.host}/` + urlCode;
