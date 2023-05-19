@@ -10,7 +10,7 @@ const shortUrl = async (req, res) => {
     if (!longUrl)
       return res.status(400).send({
         status: false,
-        message: "Long URL should be present in the request body",
+        message: "Please enter long URL",
       });
 
     let flag = false;
