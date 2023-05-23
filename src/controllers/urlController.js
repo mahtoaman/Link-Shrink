@@ -79,6 +79,15 @@ const getUrl = async (req, res) => {
   try {
     let urlCode = req.params.urlCode;
 
+    let urldata = await GET_ASYNC(`${urlCode}`);
+
+    let data = JSON.parse(urldata);
+    console.log(data);
+    if (data) {
+      console.log("from redis");
+      return res.status(302).redirect(data.longUrl);
+    }
+
     const getPage = await UrlModel.findOne({ urlCode: urlCode });
     if (getPage) {
       console.log("mongodb call");
