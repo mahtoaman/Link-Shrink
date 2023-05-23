@@ -39,6 +39,26 @@ const shortUrl = async (req, res) => {
     if (flag == false)
       return res.status(400).send({ status: false, message: "Invalid URL" });
 
+    let urldata = await GET_ASYNC(`${longUrl}`);
+    let data = JSON.parse(urldata);
+
+    if (data)
+      return res.status(201).send({
+        status: true,
+        message: `URL is already shortened`,
+        data: data,
+      });
+
+    let urlExist = await UrlModel.findOne({ longUrl });
+    if (urlExist) {
+      await SET_ASYNC(`${longUrl}`, JSON.stringify(urlExist));
+      return res.status(401).send({
+        status: false,
+        message: "URL is already shortened",
+        data: data,
+      });
+    }
+
     let urlCode = shortid.generate();
     let shortUrl = `${req.protocol}://${req.headers.host}/` + urlCode;
 
@@ -62,6 +82,7 @@ const getUrl = async (req, res) => {
     const getPage = await UrlModel.findOne({ urlCode: urlCode });
     if (getPage) {
       console.log("mongodb call");
+      await SET_ASYNC(`${urlCode}`, JSON.stringify(getPage));
       return res.status(302).redirect(getPage.longUrl);
     }
     return res
