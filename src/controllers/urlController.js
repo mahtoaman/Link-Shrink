@@ -1,6 +1,15 @@
 const UrlModel = require("../models/urlModel");
 const shortid = require("shortid");
 const axios = require("axios"); //
+const redis = require("redis"); //for reddish
+const { promisify } = require("util");
+
+//==================================REDIS IMPLEMENTATION===========================
+
+const redisClient = redis.createClient("redis://red-chm70bm4dad6k5mphns0:6379");
+
+const SET_ASYNC = promisify(redisClient.SET).bind(redisClient);
+const GET_ASYNC = promisify(redisClient.GET).bind(redisClient);
 
 //==================================create-api===========================>>>
 
@@ -23,9 +32,12 @@ const shortUrl = async (req, res) => {
       .then((res) => {
         if (res.status == 201 || res.status == 200) flag = true;
       })
-      .catch((err) => {console.log(err)});
+      .catch((err) => {
+        console.log(err);
+      });
 
-    if (flag == false) return res.status(400).send({ status: false, message: "Invalid URL"});
+    if (flag == false)
+      return res.status(400).send({ status: false, message: "Invalid URL" });
 
     let urlCode = shortid.generate();
     let shortUrl = `${req.protocol}://${req.headers.host}/` + urlCode;
